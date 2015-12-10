@@ -37,13 +37,12 @@ then
 		echo "Gup is updating branches '$2' and '$3' with latest changes from remote repo and rebasing branch '$2' on top of '$3'. (You're the feature owner, right?)"
 		echo ""
 		git fetch --all --prune
-		git checkout $2
-		echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-		git rebase -p origin/$2 
 		git checkout $3
 		echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
 		git rebase -p origin/$3
 		git checkout $2
+		echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+		git rebase -p origin/$2 
 		echo "Replaying updated '$2' onto updated '$3'."
 		git rebase -p $3
 		else
