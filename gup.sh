@@ -57,17 +57,17 @@ then
 	then
 		if  [ $1 == "--update-both" ];
 		then
-		echo "Gup is updating branches '$2' and '$3' with latest changes from remote repo and rebasing branch '$2' on top of '$3'. (You're the feature owner, right?)"
-		echo ""
-		git fetch --all --prune
-		git checkout $3
-		echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
-		git rebase -p origin/$3
-		git checkout $2
-		echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-		git rebase -p origin/$2 
-		echo "Replaying updated '$2' onto updated '$3'."
-		git rebase -p $3
+			echo "Gup is updating branches '$2' and '$3' with latest changes from remote repo and rebasing branch '$2' on top of '$3'. (You're the feature owner, right?)"
+			echo ""
+			git fetch --all --prune
+			git checkout $3
+			echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
+			git rebase -p origin/$3
+			git checkout $2
+			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+			git rebase -p origin/$2 
+			echo "Replaying updated '$2' onto updated '$3'."
+			git rebase -p $3
 		else
 			HASERROR=true
 			echo "invalid flag '$3'"
@@ -79,10 +79,18 @@ then
 		git stash pop
 	fi
 	
+	if [ "$?" -ne 0 ]; 
+	then 
+		HASERROR=true
+	fi
+	
 	if [ "$HASERROR" == "false" ];
 	then
 		echo ""
 		echo "-------- Gup completed successfully! --------"
+	else
+		echo ""
+		echo "-------- Gup did not complete successfully. Please check the output above to identify the error. --------"
 	fi
 	
 else
