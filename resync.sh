@@ -35,6 +35,7 @@ then
 		BEFORE=$(git stash list)
 		git stash save resync-temporary-stash
 	
+		git checkout master
 		git branch -D $1
 		git fetch --all --prune
 		git checkout $1
