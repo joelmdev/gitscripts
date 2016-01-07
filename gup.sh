@@ -32,14 +32,19 @@ then
 
 	if [ $# == 1 ];
 	then
-		echo "Gup is updating branch '$1' with latest changes from remote repo."
-		echo ""
-		git fetch --all --prune
-		git checkout $1
-		echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
-		git rebase -p origin/$1 
-		HASERROR=false
-
+		HASREMOTE=$(git branch -l -a | grep /$1$)
+		if [ "$HASREMOTE" == "" ];
+		then
+			echo "Can't update '$1' from the remote repo because no remote by the name of '$1' can be found."
+		else
+			echo "Gup is updating branch '$1' with latest changes from remote repo."
+			echo ""
+			git fetch --all --prune
+			git checkout $1
+			echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
+			git rebase -p origin/$1 
+			HASERROR=false
+		fi
 	elif [ $# == 2 ];
 	then
 		HASREMOTE=$(git branch -l -a | grep /$1$)
