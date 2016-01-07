@@ -42,16 +42,22 @@ then
 
 	elif [ $# == 2 ];
 	then
-		echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
-		echo ""
-		git fetch --all --prune
-		git checkout $2
-		echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-		git rebase -p origin/$2 
-		git checkout $1
-		echo "Replaying '$1' onto updated '$2'."
-		git rebase -p $2
-		HASERROR=false
+		HASREMOTE=$(git branch -l -a | grep /$1$)
+		if [ "$HASREMOTE" == "" ];
+		then
+			echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
+			echo ""
+			git fetch --all --prune
+			git checkout $2
+			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+			git rebase -p origin/$2 
+			git checkout $1
+			echo "Replaying '$1' onto updated '$2'."
+			git rebase -p $2
+			HASERROR=false
+		else
+			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
+		fi
 
 	elif [ $# == 3 ];
 	then
