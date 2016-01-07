@@ -91,6 +91,18 @@ then
 	then
 		echo ""
 		echo "-------- Gup completed successfully! --------"
+		if [ $# == 3 ];
+		then
+			echo ""
+			echo "--update-both needs you to force an update of the remote feature branch '$2'. Would you like to do that now? (type YES to confirm, or any other key to do it later.)"
+			read ANSWER
+			if [ "$ANSWER" == "YES" ];
+			then
+				git push --force origin $2
+			else
+				echo "Forced update of '$2' aborted. Please be sure to run 'git push --force origin $2' before running 'git gup' again."
+			fi
+		fi
 	else
 		echo ""
 		echo "-------- Gup did not complete successfully. Please check the output above to identify the error. --------"
