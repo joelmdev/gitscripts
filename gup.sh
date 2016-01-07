@@ -23,7 +23,7 @@
 #SOFTWARE.
 
 
-HASERROR=false
+HASERROR=true
 
 if [ $# -le 3 ];
 then
@@ -38,9 +38,9 @@ then
 		git checkout $1
 		echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
 		git rebase -p origin/$1 
-	fi
+		HASERROR=false
 
-	if [ $# == 2 ];
+	elif [ $# == 2 ];
 	then
 		echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
 		echo ""
@@ -51,9 +51,9 @@ then
 		git checkout $1
 		echo "Replaying '$1' onto updated '$2'."
 		git rebase -p $2
-	fi
+		HASERROR=false
 
-	if [ $# == 3 ];
+	elif [ $# == 3 ];
 	then
 		if  [ $1 == "--update-both" ];
 		then
@@ -68,20 +68,17 @@ then
 			git rebase -p origin/$2 
 			echo "Replaying updated '$2' onto updated '$3'."
 			git rebase -p $3
+			HASERROR=false
 		else
-			HASERROR=true
 			echo "invalid flag '$3'"
 		fi
+	else
+		echo "invalid number of arguments"	
 	fi
 	
 	if [ "$BEFORE" != "$(git stash list)" ]; 
 	then
 		git stash pop
-	fi
-	
-	if [ "$?" -ne 0 ]; 
-	then 
-		HASERROR=true
 	fi
 	
 	if [ "$HASERROR" == "false" ];
