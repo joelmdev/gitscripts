@@ -35,12 +35,9 @@ then
 		BEFORE=$(git stash list)
 		git stash save resync-temporary-stash
 	
-		git branch -D $2
+		git branch -D $1
 		git fetch --all --prune
-		git checkout $2
 		git checkout $1
-		echo "Replaying '$1' onto updated '$2' and leaving merge commits behind."
-		git rebase $2
 		HASERROR=false
 		
 		if [ "$BEFORE" != "$(git stash list)" ]; 
