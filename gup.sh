@@ -99,8 +99,14 @@ then
 		then
 			git stash pop
 		fi
-		echo ""
-		echo "-------- Gup completed successfully! --------"
+		if [ "$BEFORE" == "$(git stash list)" ]; 
+		then
+			echo ""
+			echo "-------- Gup completed successfully! --------"
+		else
+			echo ""
+			echo "-------- Gup completed successfully, but there was a problem when popping the stash. Please resolve the conflicts manually and run 'git stash drop', or reset your working directory and run 'git stash pop' on another branch. --------"
+		fi
 		if [ $# == 3 ];
 		then
 			echo ""
