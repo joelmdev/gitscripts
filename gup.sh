@@ -42,7 +42,7 @@ then
 			git fetch --all --prune
 			git checkout $1
 			echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
-			REBASEPROGRESS=$(git rebase -p origin/$1|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p origin/$1 2>&1|tee /dev/tty)
 			HASERROR=false
 		fi
 	elif [ $# == 2 ];
@@ -58,7 +58,7 @@ then
 			git rebase -p origin/$2 
 			git checkout $1
 			echo "Replaying '$1' onto updated '$2'."
-			REBASEPROGRESS=$(git rebase -p $2|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p $2 2>&1|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
@@ -78,7 +78,7 @@ then
 			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
 			git rebase -p origin/$2 
 			echo "Replaying updated '$2' onto updated '$3'."
-			REBASEPROGRESS=$(git rebase -p $3|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p $3 2>&1|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "invalid flag '$3'"
@@ -87,7 +87,7 @@ then
 		echo "invalid number of arguments"	
 	fi
 	
-	REBASESUCCEEDED=$(echo $REBASEPROGRESS | grep "Successfully rebased and updated")
+	REBASESUCCEEDED=$(echo "$REBASEPROGRESS"|grep "Successfully rebased and updated")
 	if [ "$REBASESUCCEEDED" == "" ];
 	then
 		HASERROR=true
