@@ -42,7 +42,7 @@ then
 			git fetch --all --prune
 			git checkout $1
 			echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
-			git rebase -p origin/$1 
+			REBASEPROGRESS=$(git rebase -p origin/$1|tee /dev/tty)
 			HASERROR=false
 		fi
 	elif [ $# == 2 ];
@@ -58,7 +58,7 @@ then
 			git rebase -p origin/$2 
 			git checkout $1
 			echo "Replaying '$1' onto updated '$2'."
-			git rebase -p $2
+			REBASEPROGRESS=$(git rebase -p $2|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
@@ -78,7 +78,7 @@ then
 			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
 			git rebase -p origin/$2 
 			echo "Replaying updated '$2' onto updated '$3'."
-			git rebase -p $3
+			REBASEPROGRESS=$(git rebase -p $3|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "invalid flag '$3'"
@@ -87,13 +87,18 @@ then
 		echo "invalid number of arguments"	
 	fi
 	
-	if [ "$BEFORE" != "$(git stash list)" ]; 
+	REBASEFAILED=$(echo $REBASEPROGRESS | grep "When you have resolved this problem, run")
+	if [ "$REBASEFAILED" != "" ];
 	then
-		git stash pop
+		HASERROR=true
 	fi
 	
 	if [ "$HASERROR" == "false" ];
 	then
+		if [ "$BEFORE" != "$(git stash list)" ]; 
+		then
+			git stash pop
+		fi
 		echo ""
 		echo "-------- Gup completed successfully! --------"
 		if [ $# == 3 ];
@@ -111,6 +116,10 @@ then
 	else
 		echo ""
 		echo "-------- Gup did not complete successfully. Please check the output above to identify the error. --------"
+		if [ "$BEFORE" != "$(git stash list)" ]; 
+		then
+			echo "Gup stashed your uncommitted changes, but did not pop them due to an error. Remember to run 'git stash pop' once you have resolved the error."
+		fi
 	fi
 	
 else
