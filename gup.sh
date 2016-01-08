@@ -87,8 +87,8 @@ then
 		echo "invalid number of arguments"	
 	fi
 	
-	REBASEFAILED=$(echo $REBASEPROGRESS | grep "When you have resolved this problem, run")
-	if [ "$REBASEFAILED" != "" ];
+	REBASESUCCEEDED=$(echo $REBASEPROGRESS | grep "Successfully rebased and updated")
+	if [ "$REBASESUCCEEDED" == "" ];
 	then
 		HASERROR=true
 	fi
