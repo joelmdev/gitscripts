@@ -25,6 +25,16 @@
 
 if [ $# -ne 1 ];
 then
-git checkout $2
+	BEFORE=$(git stash list)
+	git stash save gup-temporary-stash
+	
+	git checkout $2
+	git merge --no-ff $1
+	
+	if [ "$BEFORE" != "$(git stash list)" ]; 
+	then
+		git stash pop
+	fi
+else
+	git merge --no-ff $1
 fi
-git merge --no-ff $1
