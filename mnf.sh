@@ -35,6 +35,14 @@ then
 	then
 		git stash pop
 	fi
+	if [ "$BEFORE" == "$(git stash list)" ]; 
+	then
+		echo ""
+		echo "-------- Merge completed successfully! --------"
+	else
+		echo ""
+		echo "-------- Merge completed successfully, but there was a problem when popping the stash. Please resolve the conflicts manually and run 'git stash drop', or reset your working directory and run 'git stash pop' on another branch. --------"
+	fi
 else
 	git merge --no-ff $1
 fi
