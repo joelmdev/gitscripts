@@ -29,7 +29,7 @@ then
 	git stash save gup-temporary-stash
 	
 	git checkout $2
-	git merge --no-ff $1
+	git merge --no-ff --no-edit $1
 	
 	if [ "$BEFORE" != "$(git stash list)" ]; 
 	then
