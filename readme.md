@@ -12,6 +12,7 @@ changelog = !C:/path/to/the/scripts/changelog.sh
 mnf = !C:/path/to/the/scripts/mnf.sh
 co = !C:/path/to/the/scripts/co.sh
 sp = !C:/path/to/the/scripts/sp.sh
+sl = !C:/path/to/the/scripts/sl.sh
 f = !C:/path/to/the/scripts/f.sh
 resync = !C:/path/to/the/scripts/resync.sh
 ```
