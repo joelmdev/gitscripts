@@ -11,6 +11,7 @@ gup = !C:/path/to/the/scripts/gup.sh
 changelog = !C:/path/to/the/scripts/changelog.sh
 mnf = !C:/path/to/the/scripts/mnf.sh
 co = !C:/path/to/the/scripts/co.sh
+sp = !C:/path/to/the/scripts/sp.sh
 f = !C:/path/to/the/scripts/f.sh
 resync = !C:/path/to/the/scripts/resync.sh
 ```
@@ -63,3 +64,15 @@ git gup --update-both feature-addValidationToNewUserForm development
 Use this command if you have a feature branch that has been pushed to the remote repository *and* you are the feature branch owner. This command works similar to those listed above, but it will integrate any changes from the remote main branch into your local tracking branch, then integrate changes from the remote feature branch into your local tracking branch, and finally replay the feature branch on top of the main branch. It is important to note that this command requires a git push with the --force flag set, which the script will prompt you to perform at the end of successful rebasing. If the script is unsuccessful, you will need to do this yourself. If a stash save was necessary and if the rebase was successful, it will pop the stash before completing
 
 
+##mnf
+Shortcut to `git merge --no-ff` command.
+
+```
+git mnf [feature-branch-name] [trunk-branch-name]
+```
+
+example
+
+```
+git mnf feature-addValidationToNewUserForm development
+```
