@@ -22,5 +22,12 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-
-git stash pop stash@\{$1\}
+if [ $# == 1 ];
+then
+	git stash pop stash@\{$1\}
+elif [ $# == 0 ];
+then
+	git stash pop
+else
+	echo "too many arguments for 'sp'. usage is 'git sp' or 'git sp [STASH#]'."
+fi
