@@ -11,6 +11,7 @@ gup = !C:/path/to/the/scripts/gup.sh
 changelog = !C:/path/to/the/scripts/changelog.sh
 mnf = !C:/path/to/the/scripts/mnf.sh
 co = !C:/path/to/the/scripts/co.sh
+cob = !C:/path/to/the/scripts/cob.sh
 sp = !C:/path/to/the/scripts/sp.sh
 sl = !C:/path/to/the/scripts/sl.sh
 f = !C:/path/to/the/scripts/f.sh
