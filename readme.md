@@ -15,6 +15,7 @@ cob = !C:/path/to/the/scripts/cob.sh
 ss = !C:/path/to/the/scripts/ss.sh
 sp = !C:/path/to/the/scripts/sp.sh
 sl = !C:/path/to/the/scripts/sl.sh
+sd = !C:/path/to/the/scripts/sd.sh
 f = !C:/path/to/the/scripts/f.sh
 resync = !C:/path/to/the/scripts/resync.sh
 ```
