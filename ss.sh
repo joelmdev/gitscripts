@@ -23,4 +23,4 @@
 #SOFTWARE.
 
 
-git stash save
+git stash save "$@"
