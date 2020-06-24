@@ -13,6 +13,7 @@ mnf = !C:/path/to/the/scripts/mnf.sh
 co = !C:/path/to/the/scripts/co.sh
 cob = !C:/path/to/the/scripts/cob.sh
 ss = !C:/path/to/the/scripts/ss.sh
+sss = !C:/path/to/the/scripts/sss.sh
 sp = !C:/path/to/the/scripts/sp.sh
 sl = !C:/path/to/the/scripts/sl.sh
 sd = !C:/path/to/the/scripts/sd.sh
