@@ -42,7 +42,7 @@ then
 			git fetch --all --prune
 			git checkout $1
 			echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
-			REBASEPROGRESS=$(git rebase --rebase-merges origin/$1 2>&1|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p origin/$1 2>&1|tee /dev/tty)
 			HASERROR=false
 		fi
 	elif [ $# == 2 ];
@@ -55,10 +55,10 @@ then
 			git fetch --all --prune
 			git checkout $2
 			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$2 
+			git rebase -p origin/$2 
 			git checkout $1
 			echo "Replaying '$1' onto updated '$2'."
-			REBASEPROGRESS=$(git rebase --rebase-merges $2 2>&1|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p $2 2>&1|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
@@ -73,12 +73,12 @@ then
 			git fetch --all --prune
 			git checkout $3
 			echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$3
+			git rebase -p origin/$3
 			git checkout $2
 			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$2 
+			git rebase -p origin/$2 
 			echo "Replaying updated '$2' onto updated '$3'."
-			REBASEPROGRESS=$(git rebase --rebase-merges $3 2>&1|tee /dev/tty)
+			REBASEPROGRESS=$(git rebase -p $3 2>&1|tee /dev/tty)
 			HASERROR=false
 		else
 			echo "invalid flag '$3'"
