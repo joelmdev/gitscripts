@@ -90,7 +90,11 @@ then
 	REBASESUCCEEDED=$(echo "$REBASEPROGRESS"|grep "Successfully rebased and updated")
 	if [ "$REBASESUCCEEDED" == "" ];
 	then
-		HASERROR=true
+		REBASESUCCEEDED=$(echo "$REBASEPROGRESS"|grep -E "^Current branch .+ is up to date\.$")
+		if [ "$REBASESUCCEEDED" == "" ];
+		then
+			HASERROR=true
+		fi	
 	fi
 	
 	if [ "$HASERROR" == "false" ];
