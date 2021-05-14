@@ -12,13 +12,16 @@ changelog = !C:/path/to/the/scripts/changelog.sh
 mnf = !C:/path/to/the/scripts/mnf.sh
 co = !C:/path/to/the/scripts/co.sh
 cob = !C:/path/to/the/scripts/cob.sh
+f = !C:/path/to/the/scripts/f.sh
+resync = !C:/path/to/the/scripts/resync.sh
 ss = !C:/path/to/the/scripts/ss.sh
 sss = !C:/path/to/the/scripts/sss.sh
 sp = !C:/path/to/the/scripts/sp.sh
 sl = !C:/path/to/the/scripts/sl.sh
 sd = !C:/path/to/the/scripts/sd.sh
-f = !C:/path/to/the/scripts/f.sh
-resync = !C:/path/to/the/scripts/resync.sh
+bd = !C:/path/to/the/scripts/bd.sh
+bdd = !C:/path/to/the/scripts/bdd.sh
+bm = !C:/path/to/the/scripts/bm.sh
 ```
 
 It's also advisable, but not required, to enable [rerere](https://git-scm.com/blog/2010/03/08/rerere.html) to assist with conflicts:
