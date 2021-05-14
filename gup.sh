@@ -47,7 +47,7 @@ then
 		fi
 	elif [ $# == 2 ];
 	then
-		HASREMOTE=$(git branch -l -a | grep /$1$)
+		HASREMOTE=$(git branch -l -a | grep ^[[:space:]]*remotes/.*$1$)
 		if [ "$HASREMOTE" == "" ];
 		then
 			echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
