@@ -23,7 +23,7 @@
 #SOFTWARE.
 
 
-HASERROR=true
+HASERROR=1
 
 if [ $# -le 3 ];
 then
@@ -40,10 +40,19 @@ then
 			echo "Gup is updating branch '$1' with latest changes from remote repo."
 			echo ""
 			git fetch --all --prune
-			git checkout $1
-			echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
-			REBASEPROGRESS=$(git rebase --rebase-merges origin/$1 2>&1|tee /dev/tty)
-			HASERROR=false
+
+			if [ $? == 0 ]
+			then
+				git checkout $1
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
+				git rebase --rebase-merges origin/$1 2>&1
+			fi
+
+			HASERROR=$?
 		fi
 	elif [ $# == 2 ];
 	then
@@ -53,17 +62,33 @@ then
 			echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
 			echo ""
 			git fetch --all --prune
-			git checkout $2
-			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$2 
-			git checkout $1
-			echo "Replaying '$1' onto updated '$2'."
-			REBASEPROGRESS=$(git rebase --rebase-merges $2 2>&1|tee /dev/tty)
-			HASERROR=false
+
+			if [ $? == 0 ]
+			then
+				git checkout $2
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+				git rebase --rebase-merges origin/$2 
+			fi
+
+			if [ $? == 0 ]
+			then
+				git checkout $1
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying '$1' onto updated '$2'."
+				git rebase --rebase-merges $2 2>&1
+			fi
+
+			HASERROR=$?
 		else
 			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
 		fi
-
 	elif [ $# == 3 ];
 	then
 		if  [ $1 == "--update-both" ];
@@ -71,33 +96,46 @@ then
 			echo "Gup is updating branches '$2' and '$3' with latest changes from remote repo and rebasing branch '$2' on top of '$3'. (You're the feature owner, right?)"
 			echo ""
 			git fetch --all --prune
-			git checkout $3
-			echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$3
-			git checkout $2
-			echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-			git rebase --rebase-merges origin/$2 
-			echo "Replaying updated '$2' onto updated '$3'."
-			REBASEPROGRESS=$(git rebase --rebase-merges $3 2>&1|tee /dev/tty)
-			HASERROR=false
+
+			if [ $? == 0 ]
+			then
+				git checkout $3
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
+				git rebase --rebase-merges origin/$3
+			fi
+
+			if [ $? == 0 ]
+			then
+				git checkout $2
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+				git rebase --rebase-merges origin/$2 
+			fi
+
+			if [ $? == 0 ]
+			then
+				echo "Replaying updated '$2' onto updated '$3'."
+				git rebase --rebase-merges $3 2>&1
+			fi
+
+			HASERROR=$?
 		else
 			echo "invalid flag '$3'"
+			exit 1
 		fi
 	else
-		echo "invalid number of arguments"	
+		echo "invalid number of arguments"
+		exit 1
 	fi
-	
-	REBASESUCCEEDED=$(echo "$REBASEPROGRESS"|grep "Successfully rebased and updated")
-	if [ "$REBASESUCCEEDED" == "" ];
-	then
-		REBASESUCCEEDED=$(echo "$REBASEPROGRESS"|grep -E "^Current branch .+ is up to date\.$")
-		if [ "$REBASESUCCEEDED" == "" ];
-		then
-			HASERROR=true
-		fi	
-	fi
-	
-	if [ "$HASERROR" == "false" ];
+
+	if [ "$HASERROR" == 0 ];
 	then
 		if [ "$BEFORE" != "$(git stash list)" ]; 
 		then
@@ -110,6 +148,7 @@ then
 		else
 			echo ""
 			echo "-------- Gup completed successfully, but there was a problem when popping the stash. Please resolve the conflicts manually and run 'git stash drop', or reset your working directory and run 'git stash pop' on another branch. --------"
+			exit 1
 		fi
 		if [ $# == 3 ];
 		then
@@ -121,6 +160,7 @@ then
 				git push --force origin $2
 			else
 				echo "Forced update of '$2' aborted. Please be sure to run 'git push --force origin $2' before running 'git gup' again."
+				exit 1
 			fi
 		fi
 	else
@@ -131,7 +171,9 @@ then
 			echo "Gup stashed your uncommitted changes, but did not pop them due to an error. Remember to run 'git stash pop' once you have resolved the error."
 		fi
 	fi
-	
+
 else
 	echo "invalid syntax."
 fi
+
+exit $HASERROR
