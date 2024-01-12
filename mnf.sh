@@ -26,15 +26,24 @@
 if [ $# -ne 1 ];
 then
 	BEFORE=$(git stash list)
+
 	git stash save gup-temporary-stash
 	
-	git checkout $2
-	git merge --no-ff --no-edit $1
-	
+	if ! git checkout $2;
+	then
+		exit $?
+	fi
+
+	if ! git merge --no-ff --no-edit $1;
+	then
+		exit $?
+	fi
+
 	if [ "$BEFORE" != "$(git stash list)" ]; 
 	then
 		git stash pop
 	fi
+
 	if [ "$BEFORE" == "$(git stash list)" ]; 
 	then
 		echo ""
@@ -42,7 +51,9 @@ then
 	else
 		echo ""
 		echo "-------- Merge completed successfully, but there was a problem when popping the stash. Please resolve the conflicts manually and run 'git stash drop', or reset your working directory and run 'git stash pop' on another branch. --------"
+		exit 1
 	fi
 else
 	git merge --no-ff $1
+	exit $?
 fi
