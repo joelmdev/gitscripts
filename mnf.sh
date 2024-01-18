@@ -52,7 +52,7 @@ then
 
 		PROTECTED_BRANCH=false
 		for branch in "${PROTECTED_BRANCHES[@]}"; do
-			if [ "$2" == "$branch" ]; then
+			if [ "$1" == "$branch" ]; then
 				PROTECTED_BRANCH=true
 				break
 			fi
