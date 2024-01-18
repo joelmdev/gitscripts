@@ -22,6 +22,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+PROTECTED_BRANCHES=("dev" "test" "prod")
 
 if [ $# -ne 1 ];
 then
@@ -48,6 +49,23 @@ then
 	then
 		echo ""
 		echo "-------- Merge completed successfully! --------"
+
+		PROTECTED_BRANCH=false
+		for branch in "${PROTECTED_BRANCHES[@]}"; do
+			if [ "$2" == "$branch" ]; then
+				PROTECTED_BRANCH=true
+				break
+			fi
+		done
+
+		if [ "$PROTECTED_BRANCH" == false ];
+		then
+			read -p "Do you want to delete the feature branch? (Y/n): " DELETE_BRANCH
+			if [ "$DELETE_BRANCH" == "Y" ] || [ "$DELETE_BRANCH" == "y" ];
+			then
+				git branch -d $1
+			fi
+		fi
 	else
 		echo ""
 		echo "-------- Merge completed successfully, but there was a problem when popping the stash. Please resolve the conflicts manually and run 'git stash drop', or reset your working directory and run 'git stash pop' on another branch. --------"
