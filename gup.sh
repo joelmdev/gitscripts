@@ -40,19 +40,20 @@ then
 			echo "Gup is updating branch '$1' with latest changes from remote repo."
 			echo ""
 			git fetch --all --prune
+			HASERROR=$?
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				git checkout $1
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying any local commits to '$1' on top of latest changes from remote repo."
 				git rebase --rebase-merges origin/$1 2>&1
+				HASERROR=$?
 			fi
-
-			HASERROR=$?
 		fi
 	elif [ $# == 2 ];
 	then
@@ -62,30 +63,26 @@ then
 			echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
 			echo ""
 			git fetch --all --prune
+			HASERROR=$?
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				git checkout $2
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
-			then
-				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-				git rebase --rebase-merges origin/$2 
-			fi
-
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				git checkout $1
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying '$1' onto updated '$2'."
 				git rebase --rebase-merges $2 2>&1
+				HASERROR=$?
 			fi
-
-			HASERROR=$?
 		else
 			echo "It appears that your branch '$1' has been pushed to the remote repository. Please use 'git gup --update-both $1 $2' instead."
 		fi
@@ -96,36 +93,40 @@ then
 			echo "Gup is updating branches '$2' and '$3' with latest changes from remote repo and rebasing branch '$2' on top of '$3'. (You're the feature owner, right?)"
 			echo ""
 			git fetch --all --prune
+			HASERROR=$?
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				git checkout $3
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying any local commits to '$3' on top of latest changes from remote repo."
 				git rebase --rebase-merges origin/$3
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				git checkout $2
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-				git rebase --rebase-merges origin/$2 
+				git rebase --rebase-merges origin/$2
+				HASERROR=$?
 			fi
 
-			if [ $? == 0 ]
+			if [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying updated '$2' onto updated '$3'."
 				git rebase --rebase-merges $3 2>&1
+				HASERROR=$?
 			fi
-
-			HASERROR=$?
 		else
 			echo "invalid flag '$3'"
 			exit 1
