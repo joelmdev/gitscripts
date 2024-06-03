@@ -70,6 +70,13 @@ then
 				git checkout $2
 				HASERROR=$?
 			fi
+			
+			if [ "$HASERROR" == 0 ];
+			then
+				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
+				git rebase --rebase-merges origin/$2 
+				HASERROR=$?
+			fi
 
 			if [ "$HASERROR" == 0 ];
 			then
