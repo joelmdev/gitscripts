@@ -40,6 +40,12 @@ then
 		exit $?
 	fi
 
+	script_dir="$(dirname "$0")"
+	"$script_dir/auto-tag.sh" || {
+		echo "🔥  auto-tag failed – see message above."
+		exit 1
+	}
+
 	if [ "$BEFORE" != "$(git stash list)" ]; 
 	then
 		git stash pop
