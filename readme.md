@@ -6,6 +6,7 @@ Clone the repo to your folder of choice and add the aliases to your .gitconfig:
 
 ```
 [alias]
+auto-tag = !C:/path/to/the/scripts/auto-tag.sh
 gup = !C:/path/to/the/scripts/gup.sh
 changelog = !C:/path/to/the/scripts/changelog.sh
 mnf = !C:/path/to/the/scripts/mnf.sh
@@ -73,6 +74,14 @@ git gup --update-both feature-addValidationToNewUserForm development
 ## mnf
 Shortcut to `git merge --no-ff` command.
 
+To enable auto-tagging, add this either to your global config, or just the repo config where you would like to opt-in to automatic versioning
+run `git config --global release.autoTag true` with or without --global depending on where you want to opt-in to this behavior
+or manually add the following to the desired .gitconfig
+```
+[release]
+autoTag = true
+```
+
 ### Example
 ```
 git mnf [feature-branch-name] [trunk-branch-name]
@@ -83,3 +92,26 @@ OR
 ```
 git mnf feature-addValidationToNewUserForm development
 ```
+
+## auto-tag
+Automatically creates version tags for dev, test, and prod branches after a successful mnf merge. `auto-tag` uses the currently checked out branch.
+
+Opt-in:
+```bash
+git config --global release.autoTag true   # or omit --global for repo-only
+```
+How it’s called: mnf runs the script automatically. You can run it yourself with
+
+### Example
+```bash
+git auto-tag
+```
+
+If the required upstream tag is missing for test or prod, the script aborts so you can fix history first. If dev has no matching version history tag, an initial semver will be prompted.
+
+### Tag formats
+| Branch | Tag pattern               | Example               |
+| ------ | ------------------------- | --------------------- |
+| dev    | `vX.Y.Z-dev.<YYMMDD>.<n>` | `v1.4.0-dev.250603.1` |
+| test   | `vX.Y.Z-rc.<YYMMDD>.<n>`  | `v1.4.0-rc.250605.1`  |
+| prod   | `vX.Y.Z`                  | `v1.4.0`              |
