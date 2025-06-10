@@ -17,6 +17,13 @@ parse_semver() {               # vX.Y.Z →  X Y Z
   echo "${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
 }
 
+version_lt() {                 # v1 v2 → true if v1 < v2
+  local v1=$1 v2=$2
+  read M1 m1 p1 <<<"$(parse_semver "$v1")"
+  read M2 m2 p2 <<<"$(parse_semver "$v2")"
+  [[ $M1 -lt $M2 ]] || [[ $M1 -eq $M2 && $m1 -lt $m2 ]] || [[ $M1 -eq $M2 && $m1 -eq $m2 && $p1 -le $p2 ]]
+}
+
 bump_semver() {                # M m p bumpKind
   local M=$1 m=$2 p=$3
   case $4 in
@@ -39,28 +46,67 @@ new_tag() {                    # tag message
 
 # ── main logic ────────────────────────────────────────────────────────────────
 branch=$(git symbolic-ref --quiet --short HEAD) \
-  || die "cannot detect branch"
+  || die "Failed to read current branch"
+
 [[ $branch =~ ^(dev|test|prod)$ ]] || exit 0
+echo "Auto-tagging $branch"
 
 today=$(date -u +'%y%m%d')
 
 if [[ $branch == dev ]]; then
-  base=$(latest_tag 'v*' 0 | grep -v '\-dev\.')
+  # Get the latest dev tag
+  base=$(latest_tag 'v*-dev.*' 0)
+  echo "Latest dev tag is $base"
+  
+  # Get latest rc and release tags for comparison
+  latest_rc=$(latest_tag 'v*-rc.*' 0)
+  latest_release=$(latest_tag '^v[0-9]*.[0-9]*.[0-9]*$' 0)
+  
   if [[ -z $base ]]; then
-      # first ever dev tag → ask if TTY, else 0.1.0
-      if [[ -t 0 ]]; then
-        read -rp "Initial SemVer (e.g. 0.1.0): " semver
+      # Check if we have any rc or release tags to base version on
+      if [[ -n $latest_rc ]]; then
+          base=$latest_rc
+          echo "Using latest rc tag as base: $base"
+      elif [[ -n $latest_release ]]; then
+          base=$latest_release
+          echo "Using latest release tag as base: $base"
       else
-        semver="0.1.0"
+          # first ever tag → ask if TTY, else 0.1.0
+          if [[ -t 0 ]]; then
+            read -rp "Initial SemVer (e.g. 0.1.0): " semver
+          else
+            semver="0.1.0"
+          fi
+          build=1
+          tag="v$semver-dev.$today.$build"
+          new_tag "$tag" "auto-tag: dev merge"
+          exit 0
       fi
-  else
+  fi
+
+  # If we have a base tag, parse it and ensure we bump appropriately
+  if [[ -n $base ]]; then
       read M m p <<<"$(parse_semver "$base")"
+      
+      # Check if any rc or release tags are greater than our dev tag
+      if [[ -n $latest_rc ]]; then
+          if version_lt "$base" "$latest_rc"; then
+              die "Found rc tag ($latest_rc) greater than dev tag ($base). This may indicate an invalid repository state."
+          fi
+      fi
+      
+      if [[ -n $latest_release ]]; then
+          if version_lt "$base" "$latest_release"; then
+              die "Found release tag ($latest_release) greater than dev tag ($base). This may indicate an invalid repository state."
+          fi
+      fi
+      
       if [[ -t 0 ]]; then
-        read -rp \
-          "Bump [major/minor/patch] from $M.$m.$p (default patch): " part || true
-        part=${part:-patch}
+          read -rp \
+            "Bump [major/minor/patch] from $M.$m.$p (default patch): " part || true
+          part=${part:-patch}
       else
-        part="patch"
+          part="patch"
       fi
       semver=$(bump_semver "$M" "$m" "$p" "$part")
   fi
@@ -74,12 +120,17 @@ elif [[ $branch == test ]]; then
   semver=$(sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)-dev.*/\1/' <<<"$dev_tag")
   build=$(next_build "$semver" rc "$today")
   tag="v$semver-rc.$today.$build"
-  new_tag "$tag" "auto-tag: rc"
+  new_tag "$tag" "auto-tag: release candidate"
 
-else  # prod
+elif [[ $branch == prod ]]; then
   rc_tag=$(latest_tag 'v*-rc.*' 1) \
     || die "no rc tag merged into prod"
   semver=$(sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)-rc.*/\1/' <<<"$rc_tag")
   tag="v$semver"
-  new_tag "$tag" "auto-tag: prod release"
+  new_tag "$tag" "auto-tag: production release"
+
+else
+  echo "auto-tag - Invalid branch: $branch"
+  exit 1
+
 fi
