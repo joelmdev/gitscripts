@@ -96,7 +96,7 @@ git mnf feature-addValidationToNewUserForm development
 ## auto-tag
 Automatically creates version tags for dev, test, and prod branches after a successful mnf merge. `auto-tag` uses the currently checked out branch.
 
-Opt-in:
+To opt-in when using `mnf.sh`:
 ```bash
 git config --global release.autoTag true   # or omit --global for repo-only
 ```
