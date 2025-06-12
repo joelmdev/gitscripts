@@ -103,12 +103,16 @@ if [[ $branch == dev ]]; then
       
       if [[ -t 0 ]]; then
           read -rp \
-            "Bump [major/minor/patch] from $M.$m.$p (default patch): " part || true
+            "Bump [major/minor/patch/build] from $M.$m.$p (default patch): " part || true
           part=${part:-patch}
       else
           part="patch"
       fi
-      semver=$(bump_semver "$M" "$m" "$p" "$part")
+      if [[ $part == "build" ]]; then
+          semver="$M.$m.$p"
+      else
+          semver=$(bump_semver "$M" "$m" "$p" "$part")
+      fi
   fi
   build=$(next_build "$semver" dev "$today")
   tag="v$semver-dev.$today.$build"
