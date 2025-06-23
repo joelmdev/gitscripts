@@ -40,9 +40,8 @@ then
 		exit $?
 	fi
 
-	# Check if auto-tagging is enabled
-	enabled=$(git config --bool --get release.autoTag || echo "false")
-	if [[ $enabled == true ]]; then
+	autoTagEnabled=$(git config --bool --get release.autoTag || echo "false")
+	if [[ $autoTagEnabled == true ]]; then
 		script_dir="$(dirname "$0")"
 		"$script_dir/auto-tag.sh" || {
 			echo "🔥  auto-tag failed – see message above."
