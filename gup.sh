@@ -60,7 +60,7 @@ then
 		HASREMOTE=$(git branch -l -a | grep ^[[:space:]]*remotes/.*$1$)
 		if [ "$HASREMOTE" == "" ];
 		then
-			echo "Gup is updating branch '$2' with latest changes from remote repo and rebasing local branch '$1' on top of '$2'."
+			echo "Gup is updating branch '$2' with latest changes from remote repo (if applicable) and rebasing local branch '$1' on top of '$2'."
 			echo ""
 			git fetch --all --prune
 			HASERROR=$?
@@ -70,8 +70,9 @@ then
 				git checkout $2
 				HASERROR=$?
 			fi
-			
-			if [ "$HASERROR" == 0 ];
+
+			HASREMOTE2=$(git branch -l -a | grep ^[[:space:]]*remotes/.*$2$)
+			if [ "$HASREMOTE2" != "" ] && [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
 				git rebase --rebase-merges origin/$2 
