@@ -28,7 +28,7 @@ HASERROR=1
 if [ $# -le 3 ];
 then
 	BEFORE=$(git stash list)
-	git stash save gup-temporary-stash
+	git stash push -m gup-temporary-stash
 
 	if [ $# == 1 ];
 	then
@@ -75,7 +75,7 @@ then
 			if [ "$HASREMOTE2" != "" ] && [ "$HASERROR" == 0 ];
 			then
 				echo "Replaying any local commits to '$2' on top of latest changes from remote repo."
-				git rebase --rebase-merges origin/$2 
+				git rebase --rebase-merges origin/$2
 				HASERROR=$?
 			fi
 
@@ -146,11 +146,11 @@ then
 
 	if [ "$HASERROR" == 0 ];
 	then
-		if [ "$BEFORE" != "$(git stash list)" ]; 
+		if [ "$BEFORE" != "$(git stash list)" ];
 		then
 			git stash pop
 		fi
-		if [ "$BEFORE" == "$(git stash list)" ]; 
+		if [ "$BEFORE" == "$(git stash list)" ];
 		then
 			echo ""
 			echo "-------- Gup completed successfully! --------"
@@ -166,16 +166,16 @@ then
 			read ANSWER
 			if [ "$ANSWER" == "YES" ];
 			then
-				git push --force origin $2
+				git push --force-with-lease --force-if-includes origin $2
 			else
-				echo "Forced update of '$2' aborted. Please be sure to run 'git push --force origin $2' before running 'git gup' again."
+				echo "Forced update of '$2' aborted. Please be sure to run 'git push --force-with-lease --force-if-includes origin $2' before running 'git gup' again."
 				exit 1
 			fi
 		fi
 	else
 		echo ""
 		echo "-------- Gup did not complete successfully. Please check the output above to identify the error. --------"
-		if [ "$BEFORE" != "$(git stash list)" ]; 
+		if [ "$BEFORE" != "$(git stash list)" ];
 		then
 			echo "Gup stashed your uncommitted changes, but did not pop them due to an error. Remember to run 'git stash pop' once you have resolved the error."
 		fi

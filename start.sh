@@ -22,12 +22,14 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-if [ $# == 1 ];
+# start: gup trunk + checkout -b feature. Ensures you branch off a fresh trunk.
+
+if [ $# == 2 ];
 then
-	git stash pop stash@\{$1\}
-elif [ $# == 0 ];
-then
-	git stash pop
+	if git gup $2;
+	then
+		git checkout -b $1
+	fi
 else
-	echo "too many arguments for 'sp'. usage is 'git sp' or 'git sp [STASH#]'."
+	echo "invalid syntax. usage: git start <new-branch> <trunk>"
 fi

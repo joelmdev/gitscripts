@@ -26,17 +26,10 @@ if [ $# -le 3 ] && [ $# -ge 2 ];
 then
 	if [ $# == 2 ];
 	then
-		
-		if git gup $1 $2;
-		then
-			git mnf $1 $2
-		fi
+		git gup $1 $2 && git mnf $1 $2
 	elif [ $# == 3 ];
 	then
-		if git gup $1 $2 $3;
-		then
-			git mnf $2 $3
-		fi
+		git gup $1 $2 $3 && git mnf $2 $3
 	fi
 else
 	echo "invalid syntax."

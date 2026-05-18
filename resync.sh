@@ -33,7 +33,7 @@ then
 	if [ "$ANSWER" == "YES" ];
 	then
 		BEFORE=$(git stash list)
-		git stash save resync-temporary-stash
+		git stash push -m resync-temporary-stash
 	
 		git checkout prod
 		git branch -D $1

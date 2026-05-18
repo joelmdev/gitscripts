@@ -22,5 +22,27 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+ship_cleanup() {
+	if git show-ref --verify --quiet refs/remotes/origin/$1;
+	then
+		git bdd $1
+	else
+		git bd $1
+	fi
+}
 
-git stash list
+if [ $# == 2 ];
+then
+	MNF_SKIP_DELETE_PROMPT=1 git gmnf $1 $2 && git push && ship_cleanup $1
+elif [ $# == 3 ];
+then
+	if [ "$1" != "--update-both" ];
+	then
+		echo "invalid flag '$1'"
+		exit 1
+	fi
+	MNF_SKIP_DELETE_PROMPT=1 git gmnf $1 $2 $3 && git push && ship_cleanup $2
+else
+	echo "invalid syntax. usage: git ship <feature> <trunk>  OR  git ship --update-both <feature> <trunk>"
+	exit 1
+fi

@@ -22,9 +22,14 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+# fco: fetch + checkout. For grabbing a teammate's freshly-pushed branch.
+
 if [ $# == 1 ];
 then
-	git stash drop stash@\{$1\}
+	if git fetch --all --prune;
+	then
+		git checkout $1
+	fi
 else
-	echo "wrong number of arguments for 'sd'. usage is 'git sd [STASH#]'."
+	echo "invalid syntax. usage: git fco <branch>"
 fi

@@ -28,7 +28,7 @@ if [ $# -ne 1 ];
 then
 	BEFORE=$(git stash list)
 
-	git stash save gup-temporary-stash
+	git stash push -m gup-temporary-stash
 	
 	if ! git checkout $2;
 	then
@@ -67,7 +67,7 @@ then
 			fi
 		done
 
-		if [ "$PROTECTED_BRANCH" == false ];
+		if [ "$PROTECTED_BRANCH" == false ] && [ "$MNF_SKIP_DELETE_PROMPT" != "1" ];
 		then
 			read -p "Do you want to delete the feature branch? (Y/n): " DELETE_BRANCH
 			if [ "$DELETE_BRANCH" == "Y" ] || [ "$DELETE_BRANCH" == "y" ];

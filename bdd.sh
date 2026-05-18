@@ -25,29 +25,29 @@
 
 if [ $# == 1 ];
 then
-	DELETERESULT=$(git branch -d $1 2>&1|tee /dev/tty)
-	DELETESUCCESS=$(echo "$DELETERESULT"|grep "error: ")
-	if [ "$DELETESUCCESS" == "" ];
+	if git branch -d $1;
 	then
-		git push origin :$1
+		git push -d origin $1
 	else
 		echo "Cannot proceed with remote delete because local delete failed."
+		exit 1
 	fi
 elif [ $# == 2 ];
 then
 	if  [ $1 == "!" ];
 	then
-		DELETERESULT=$(git branch -D $2 2>&1|tee /dev/tty)
-		DELETESUCCESS=$(echo "$DELETERESULT"|grep "error: ")
-		if [ "$DELETESUCCESS" == "" ];
+		if git branch -D $2;
 		then
-			git push origin :$2
+			git push -d origin $2
 		else
 			echo "Cannot proceed with remote delete because local delete failed."
-		fi	
+			exit 1
+		fi
 	else
 		echo "invalid flag '$1'"
+		exit 1
 	fi
 else
 	echo "invalid number of arguments"
+	exit 1
 fi
